@@ -122,6 +122,7 @@ class BackupSchedule:
         self.enabled: bool = False
         self.timeZone: str = ""
         self.deleteBackupData: bool = False # unused
+        self.successfulJobsHistoryLimit: int = 0
 
     def add_to_pod_spec(self, pod_spec: dict, container_name: str) -> None:
         assert self.backupProfile
@@ -138,6 +139,8 @@ class BackupSchedule:
         self.backupProfileName = dget_str(spec, "backupProfileName", prefix, default_value= "")
 
         self.timeZone = dget_str(spec, "timeZone", prefix, default_value="") # marking timeZone with default_value None will make it non-optional
+
+        self.successfulJobsHistoryLimit = dget_int(spec, "successfulJobsHistoryLimit", prefix, default_value=3)
 
         self.schedule = dget_str(spec, "schedule", prefix)
         if not self.schedule:
@@ -164,7 +167,7 @@ class BackupSchedule:
                 raise ApiSpecError(f"Invalid backupProfileName '{self.backupProfileName}' in cluster {self.cluster_spec.namespace}/{self.cluster_spec.name}")
 
     def __str__(self) -> str:
-        return f"Object BackupSchedule scheduleName={self.name} deleteBackupData={self.deleteBackupData} enabled={self.enabled} backupProfileName={self.backupProfileName} schedule={self.schedule} profile={self.backupProfile} timeZone={self.timeZone}"
+        return f"Object BackupSchedule scheduleName={self.name} deleteBackupData={self.deleteBackupData} enabled={self.enabled} backupProfileName={self.backupProfileName} schedule={self.schedule} profile={self.backupProfile} timeZone={self.timeZone} successfulJobsHistoryLimit={self.successfulJobsHistoryLimit}"
 
     def __eq__(self, other : 'BackupSchedule') -> bool:
         assert other is None or isinstance(other, BackupSchedule)
@@ -177,7 +180,8 @@ class BackupSchedule:
                 and self.schedule == other.schedule \
                 and self.deleteBackupData == other.deleteBackupData \
                 and self.timeZone == other.timeZone \
-                and self.enabled == other.enabled)
+                and self.enabled == other.enabled \
+                and self.successfulJobsHistoryLimit == other.successfulJobsHistoryLimit )
 
 
 class MySQLBackupSpec:
