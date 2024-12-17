@@ -24,7 +24,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -f Dockerfile -t ghcr.io/${{ github.repository }}/mysql-operator:latest .
+          docker build -f Dockerfile-patch -t ghcr.io/${{ github.repository }}/mysql-operator:latest .
 
       - name: Push Docker image
         run: |
