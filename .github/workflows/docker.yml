@@ -11,7 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -20,7 +19,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-docker-${{ github.sha }}
@@ -36,7 +35,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -f docker-build/Dockerfile -t ghcr.io/${{ github.repository }}/mysql-operator:latest .
+          sh gen_dockerfile.sh
+          docker build -f Dockerfile -t ghcr.io/${{ github.repository }}/mysql-operator:latest .
 
       - name: Push Docker image
         run: |
