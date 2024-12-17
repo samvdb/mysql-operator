@@ -1,0 +1,46 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to the main branch (modify as needed)
+  pull_request:
+    branches:
+      - main  # Trigger on pull requests targeting the main branch (modify as needed)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}  # GitHub username
+          password: ${{ secrets.GITHUB_TOKEN }}  # GitHub token is automatically provided
+
+      - name: Build Docker image
+        run: |
+          docker build -f docker-build/Dockerfile -t ghcr.io/${{ github.repository }}/mysql-operator:latest .
+
+      - name: Push Docker image
+        run: |
+          docker tag ghcr.io/${{ github.repository }}/mysql-operator:latest ghcr.io/${{ github.repository }}/mysql-operator:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository }}/mysql-operator:latest
+          docker push ghcr.io/${{ github.repository }}/mysql-operator:${{ github.sha }}
+
