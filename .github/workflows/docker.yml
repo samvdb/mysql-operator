@@ -3,10 +3,10 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # Trigger on pushes to the main branch (modify as needed)
+      - trunk  # Trigger on pushes to the main branch (modify as needed)
   pull_request:
     branches:
-      - main  # Trigger on pull requests targeting the main branch (modify as needed)
+      - trunk  # Trigger on pull requests targeting the main branch (modify as needed)
 
 jobs:
   build:
