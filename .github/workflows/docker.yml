@@ -24,7 +24,6 @@ jobs:
 
       - name: Build Docker image
         run: |
-          sh gen_dockerfile.sh
           docker build -f Dockerfile -t ghcr.io/${{ github.repository }}/mysql-operator:latest .
 
       - name: Push Docker image
